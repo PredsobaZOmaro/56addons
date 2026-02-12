@@ -8,6 +8,7 @@ While in game run /56 or /56addons to open the mod GUI.
 
 Current features:
 - Chat compact
+- Dark Auction timer + Notification
 
 ## meow
 
