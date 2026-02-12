@@ -17,6 +17,11 @@ public final class Addons56Config {
 
 	public boolean chatCompactEnabled = true;
 	public int chatCompactWindowSeconds = 60;
+	public boolean darkAuctionTimerEnabled = false;
+	public boolean darkAuctionNotifyOneMinute = false;
+	public int darkAuctionTimerX = 10;
+	public int darkAuctionTimerY = 10;
+	public float darkAuctionTimerScale = 1.0f;
 
 	public static Addons56Config load() {
 		if (!Files.exists(CONFIG_PATH)) {
@@ -27,7 +32,11 @@ public final class Addons56Config {
 
 		try (Reader reader = Files.newBufferedReader(CONFIG_PATH)) {
 			Addons56Config loaded = GSON.fromJson(reader, Addons56Config.class);
-			return loaded != null ? loaded : new Addons56Config();
+			if (loaded == null) {
+				return new Addons56Config();
+			}
+			loaded.sanitize();
+			return loaded;
 		} catch (IOException | JsonSyntaxException e) {
 			ExampleMod.LOGGER.warn("Failed to read config at {}", CONFIG_PATH, e);
 			return new Addons56Config();
@@ -35,6 +44,7 @@ public final class Addons56Config {
 	}
 
 	public void save() {
+		sanitize();
 		try {
 			Files.createDirectories(CONFIG_PATH.getParent());
 			try (Writer writer = Files.newBufferedWriter(CONFIG_PATH)) {
@@ -43,5 +53,15 @@ public final class Addons56Config {
 		} catch (IOException e) {
 			ExampleMod.LOGGER.warn("Failed to save config at {}", CONFIG_PATH, e);
 		}
+	}
+
+	private void sanitize() {
+		chatCompactWindowSeconds = Math.max(1, chatCompactWindowSeconds);
+		if (!Float.isFinite(darkAuctionTimerScale)) {
+			darkAuctionTimerScale = 1.0f;
+		}
+		darkAuctionTimerScale = Math.max(0.5f, Math.min(3.0f, darkAuctionTimerScale));
+		darkAuctionTimerX = Math.max(0, darkAuctionTimerX);
+		darkAuctionTimerY = Math.max(0, darkAuctionTimerY);
 	}
 }
