@@ -1,9 +1,7 @@
-# Fabric Example Mod
+# 56addons
 
-## Setup
+## How to use
 
-For setup instructions please see the [fabric documentation page](https://docs.fabricmc.net/develop/getting-started/setting-up) that relates to the IDE that you are using.
+While in game run /56 or /56addons to open the mod GUI.
 
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+## meow
