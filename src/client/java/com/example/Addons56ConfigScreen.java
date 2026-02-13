@@ -1,6 +1,5 @@
 package com.example;
 
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -11,7 +10,7 @@ public class Addons56ConfigScreen extends Screen {
 	private Tab selectedTab = Tab.GENERAL;
 	private ButtonWidget generalTabButton;
 	private ButtonWidget chatTabButton;
-	private ButtonWidget infoTabButton;
+	private ButtonWidget soundsTabButton;
 	private ButtonWidget chatCompactButton;
 	private ButtonWidget chatWindowMinusButton;
 	private ButtonWidget chatWindowValueButton;
@@ -19,11 +18,15 @@ public class Addons56ConfigScreen extends Screen {
 	private ButtonWidget generalEditGuiButton;
 	private ButtonWidget generalDaTimerButton;
 	private ButtonWidget generalDaNotifyButton;
+	private ButtonWidget soundsOoomagaButton;
+	private ButtonWidget soundsWindowsXpButton;
 	private ButtonWidget saveButton;
 	private boolean pendingChatCompactEnabled;
 	private int pendingChatCompactWindowSeconds;
 	private boolean pendingDarkAuctionTimerEnabled;
 	private boolean pendingDarkAuctionNotifyOneMinute;
+	private boolean pendingOoomagaSoundEnabled;
+	private boolean pendingWindowsXpSoundEnabled;
 	private boolean hasUnsavedChanges;
 
 	public Addons56ConfigScreen(Screen parent) {
@@ -40,7 +43,7 @@ public class Addons56ConfigScreen extends Screen {
 
 		generalTabButton = addDrawableChild(createTabButton(Tab.GENERAL, centerX - 155, y));
 		chatTabButton = addDrawableChild(createTabButton(Tab.CHAT, centerX - 50, y));
-		infoTabButton = addDrawableChild(createTabButton(Tab.INFO, centerX + 55, y));
+		soundsTabButton = addDrawableChild(createTabButton(Tab.SOUNDS, centerX + 55, y));
 
 		this.chatCompactButton = addDrawableChild(ButtonWidget.builder(getChatCompactLabel(), button -> {
 			pendingChatCompactEnabled = !pendingChatCompactEnabled;
@@ -76,6 +79,16 @@ public class Addons56ConfigScreen extends Screen {
 			pendingDarkAuctionNotifyOneMinute = !pendingDarkAuctionNotifyOneMinute;
 			markDirty();
 		}).dimensions(centerX - 100, 140, 200, 20).build());
+
+		this.soundsOoomagaButton = addDrawableChild(ButtonWidget.builder(getOoomagaLabel(), button -> {
+			pendingOoomagaSoundEnabled = !pendingOoomagaSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 88, 200, 20).build());
+
+		this.soundsWindowsXpButton = addDrawableChild(ButtonWidget.builder(getWindowsXpLabel(), button -> {
+			pendingWindowsXpSoundEnabled = !pendingWindowsXpSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 114, 200, 20).build());
 
 		this.saveButton = addDrawableChild(ButtonWidget.builder(Text.literal("Save Changes"), button -> savePendingChanges())
 			.dimensions(centerX - 100, this.height - 36, 98, 20)
@@ -113,6 +126,14 @@ public class Addons56ConfigScreen extends Screen {
 		return Text.literal("Notify 1 Minute Before DA: " + (pendingDarkAuctionNotifyOneMinute ? "ON" : "OFF"));
 	}
 
+	private Text getOoomagaLabel() {
+		return Text.literal("Rare Drop Carrot/Potato: " + (pendingOoomagaSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getWindowsXpLabel() {
+		return Text.literal("Frog Man or Dumpster Diver: " + (pendingWindowsXpSoundEnabled ? "ON" : "OFF"));
+	}
+
 	private void updateVisibleControls() {
 		if (generalEditGuiButton != null) {
 			generalEditGuiButton.visible = selectedTab == Tab.GENERAL;
@@ -128,6 +149,7 @@ public class Addons56ConfigScreen extends Screen {
 
 		if (chatCompactButton != null) {
 			chatCompactButton.visible = selectedTab == Tab.CHAT;
+			chatCompactButton.setMessage(getChatCompactLabel());
 		}
 		if (chatWindowMinusButton != null) {
 			chatWindowMinusButton.visible = selectedTab == Tab.CHAT;
@@ -142,14 +164,23 @@ public class Addons56ConfigScreen extends Screen {
 			chatWindowValueButton.setMessage(getChatWindowLabel());
 		}
 
+		if (soundsOoomagaButton != null) {
+			soundsOoomagaButton.visible = selectedTab == Tab.SOUNDS;
+			soundsOoomagaButton.setMessage(getOoomagaLabel());
+		}
+		if (soundsWindowsXpButton != null) {
+			soundsWindowsXpButton.visible = selectedTab == Tab.SOUNDS;
+			soundsWindowsXpButton.setMessage(getWindowsXpLabel());
+		}
+
 		if (generalTabButton != null) {
 			generalTabButton.active = selectedTab != Tab.GENERAL;
 		}
 		if (chatTabButton != null) {
 			chatTabButton.active = selectedTab != Tab.CHAT;
 		}
-		if (infoTabButton != null) {
-			infoTabButton.active = selectedTab != Tab.INFO;
+		if (soundsTabButton != null) {
+			soundsTabButton.active = selectedTab != Tab.SOUNDS;
 		}
 		if (saveButton != null) {
 			saveButton.active = hasUnsavedChanges;
@@ -162,6 +193,8 @@ public class Addons56ConfigScreen extends Screen {
 		pendingChatCompactWindowSeconds = Math.max(1, current.chatCompactWindowSeconds);
 		pendingDarkAuctionTimerEnabled = current.darkAuctionTimerEnabled;
 		pendingDarkAuctionNotifyOneMinute = current.darkAuctionNotifyOneMinute;
+		pendingOoomagaSoundEnabled = current.ooomagaSoundEnabled;
+		pendingWindowsXpSoundEnabled = current.windowsXpSoundEnabled;
 		hasUnsavedChanges = false;
 	}
 
@@ -177,6 +210,8 @@ public class Addons56ConfigScreen extends Screen {
 		updated.chatCompactWindowSeconds = Math.max(1, pendingChatCompactWindowSeconds);
 		updated.darkAuctionTimerEnabled = pendingDarkAuctionTimerEnabled;
 		updated.darkAuctionNotifyOneMinute = pendingDarkAuctionNotifyOneMinute;
+		updated.ooomagaSoundEnabled = pendingOoomagaSoundEnabled;
+		updated.windowsXpSoundEnabled = pendingWindowsXpSoundEnabled;
 		Addons56ConfigStore.apply(updated);
 		hasUnsavedChanges = false;
 		updateVisibleControls();
@@ -201,14 +236,8 @@ public class Addons56ConfigScreen extends Screen {
 
 		if (selectedTab == Tab.GENERAL) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("HUD and notification settings"), this.width / 2, 170, 0xDDDDDD);
-		} else if (selectedTab == Tab.INFO) {
-			String version = FabricLoader.getInstance()
-				.getModContainer("addons56")
-				.map(container -> container.getMetadata().getVersion().getFriendlyString())
-				.orElse("unknown");
-			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("56addons"), this.width / 2, 96, 0xDDDDDD);
-			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Version: " + version), this.width / 2, 112, 0xBBBBBB);
-			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Client-side QoL features for SkyBlock"), this.width / 2, 128, 0xBBBBBB);
+		} else if (selectedTab == Tab.SOUNDS) {
+			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Chat-triggered sound effects"), this.width / 2, 144, 0xDDDDDD);
 		}
 		if (hasUnsavedChanges) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Unsaved changes"), this.width / 2, this.height - 48, 0xFFAA00);
@@ -218,7 +247,7 @@ public class Addons56ConfigScreen extends Screen {
 	private enum Tab {
 		GENERAL(Text.literal("General")),
 		CHAT(Text.literal("Chat")),
-		INFO(Text.literal("Info"));
+		SOUNDS(Text.literal("Sounds"));
 
 		private final Text label;
 

@@ -20,6 +20,8 @@ public final class Addons56ConfigStore {
 		copy.darkAuctionTimerX = source.darkAuctionTimerX;
 		copy.darkAuctionTimerY = source.darkAuctionTimerY;
 		copy.darkAuctionTimerScale = source.darkAuctionTimerScale;
+		copy.ooomagaSoundEnabled = source.ooomagaSoundEnabled;
+		copy.windowsXpSoundEnabled = source.windowsXpSoundEnabled;
 		return copy;
 	}
 

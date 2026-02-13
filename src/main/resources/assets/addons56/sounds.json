@@ -1,0 +1,16 @@
+{
+  "ooomaga": {
+    "sounds": [
+      {
+        "name": "addons56:ooomaga"
+      }
+    ]
+  },
+  "windows_xp": {
+    "sounds": [
+      {
+        "name": "addons56:windows_xp"
+      }
+    ]
+  }
+}
