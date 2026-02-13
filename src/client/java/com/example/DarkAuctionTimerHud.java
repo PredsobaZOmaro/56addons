@@ -35,16 +35,16 @@ public final class DarkAuctionTimerHud {
 			return;
 		}
 
-		if (!forceVisible && !chatCompact.isDarkAuctionTimerEnabled()) {
+		if (!forceVisible && !DarkAuctionTimerSettings.isTimerEnabled()) {
 			return;
 		}
 
 		renderAt(
 			context,
 			client.textRenderer,
-			chatCompact.getDarkAuctionTimerX(),
-			chatCompact.getDarkAuctionTimerY(),
-			chatCompact.getDarkAuctionTimerScale()
+			DarkAuctionTimerSettings.getX(),
+			DarkAuctionTimerSettings.getY(),
+			DarkAuctionTimerSettings.getScale()
 		);
 
 	}
@@ -92,7 +92,7 @@ public final class DarkAuctionTimerHud {
 	}
 
 	private static void tickNotification(MinecraftClient client) {
-		if (!chatCompact.isDarkAuctionNotifyOneMinuteEnabled() || client.player == null || client.inGameHud == null) {
+		if (!DarkAuctionTimerSettings.isOneMinuteNotifyEnabled() || client.player == null || client.inGameHud == null) {
 			return;
 		}
 

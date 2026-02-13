@@ -157,7 +157,7 @@ public class Addons56ConfigScreen extends Screen {
 	}
 
 	private void loadPendingValues() {
-		Addons56Config current = chatCompact.snapshotConfig();
+		Addons56Config current = Addons56ConfigStore.snapshot();
 		pendingChatCompactEnabled = current.chatCompactEnabled;
 		pendingChatCompactWindowSeconds = Math.max(1, current.chatCompactWindowSeconds);
 		pendingDarkAuctionTimerEnabled = current.darkAuctionTimerEnabled;
@@ -172,12 +172,12 @@ public class Addons56ConfigScreen extends Screen {
 
 	private void savePendingChanges() {
 		// Keep HUD position/scale from current config while applying toggles changed in this screen.
-		Addons56Config updated = chatCompact.snapshotConfig();
+		Addons56Config updated = Addons56ConfigStore.snapshot();
 		updated.chatCompactEnabled = pendingChatCompactEnabled;
 		updated.chatCompactWindowSeconds = Math.max(1, pendingChatCompactWindowSeconds);
 		updated.darkAuctionTimerEnabled = pendingDarkAuctionTimerEnabled;
 		updated.darkAuctionNotifyOneMinute = pendingDarkAuctionNotifyOneMinute;
-		chatCompact.applyConfig(updated);
+		Addons56ConfigStore.apply(updated);
 		hasUnsavedChanges = false;
 		updateVisibleControls();
 	}

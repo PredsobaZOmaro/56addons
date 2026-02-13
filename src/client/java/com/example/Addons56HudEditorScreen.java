@@ -32,7 +32,7 @@ public class Addons56HudEditorScreen extends Screen {
 			0xDDDDDD
 		);
 
-		if (!chatCompact.isDarkAuctionTimerEnabled()) {
+		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
 			draggingTimer = false;
 			context.drawCenteredTextWithShadow(
 				tr,
@@ -44,9 +44,9 @@ public class Addons56HudEditorScreen extends Screen {
 			return;
 		}
 
-		int x = chatCompact.getDarkAuctionTimerX();
-		int y = chatCompact.getDarkAuctionTimerY();
-		float scale = chatCompact.getDarkAuctionTimerScale();
+		int x = DarkAuctionTimerSettings.getX();
+		int y = DarkAuctionTimerSettings.getY();
+		float scale = DarkAuctionTimerSettings.getScale();
 		int boxWidth = DarkAuctionTimerHud.getScaledWidth(tr, scale);
 		int boxHeight = DarkAuctionTimerHud.getScaledHeight(tr, scale);
 		boolean hovered = isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight);
@@ -59,7 +59,7 @@ public class Addons56HudEditorScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(Click click, boolean doubled) {
-		if (!chatCompact.isDarkAuctionTimerEnabled()) {
+		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
 			return super.mouseClicked(click, doubled);
 		}
 
@@ -69,9 +69,9 @@ public class Addons56HudEditorScreen extends Screen {
 
 		double mouseX = click.x();
 		double mouseY = click.y();
-		int x = chatCompact.getDarkAuctionTimerX();
-		int y = chatCompact.getDarkAuctionTimerY();
-		float scale = chatCompact.getDarkAuctionTimerScale();
+		int x = DarkAuctionTimerSettings.getX();
+		int y = DarkAuctionTimerSettings.getY();
+		float scale = DarkAuctionTimerSettings.getScale();
 		int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
 		int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
 		if (!isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight)) {
@@ -94,7 +94,7 @@ public class Addons56HudEditorScreen extends Screen {
 
 	@Override
 	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
-		if (!chatCompact.isDarkAuctionTimerEnabled()) {
+		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
 			draggingTimer = false;
 			return super.mouseDragged(click, deltaX, deltaY);
 		}
@@ -105,26 +105,26 @@ public class Addons56HudEditorScreen extends Screen {
 
 		double mouseX = click.x();
 		double mouseY = click.y();
-		float scale = chatCompact.getDarkAuctionTimerScale();
+		float scale = DarkAuctionTimerSettings.getScale();
 		int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
 		int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
 		int targetX = (int) Math.round(mouseX) - dragOffsetX;
 		int targetY = (int) Math.round(mouseY) - dragOffsetY;
 		int clampedX = Math.max(0, Math.min(targetX, this.width - boxWidth));
 		int clampedY = Math.max(0, Math.min(targetY, this.height - boxHeight));
-		chatCompact.setDarkAuctionTimerPosition(clampedX, clampedY);
+		DarkAuctionTimerSettings.setPosition(clampedX, clampedY);
 		return true;
 	}
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		if (!chatCompact.isDarkAuctionTimerEnabled()) {
+		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
 			return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 		}
 
-		int x = chatCompact.getDarkAuctionTimerX();
-		int y = chatCompact.getDarkAuctionTimerY();
-		float scale = chatCompact.getDarkAuctionTimerScale();
+		int x = DarkAuctionTimerSettings.getX();
+		int y = DarkAuctionTimerSettings.getY();
+		float scale = DarkAuctionTimerSettings.getScale();
 		int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
 		int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
 		if (!isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight)) {
@@ -133,13 +133,13 @@ public class Addons56HudEditorScreen extends Screen {
 
 		float updatedScale = scale + (float) verticalAmount * 0.1f;
 		updatedScale = Math.max(0.5f, Math.min(3.0f, updatedScale));
-		chatCompact.setDarkAuctionTimerScale(updatedScale);
+		DarkAuctionTimerSettings.setScale(updatedScale);
 
 		int newWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, updatedScale);
 		int newHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, updatedScale);
 		int clampedX = Math.max(0, Math.min(x, this.width - newWidth));
 		int clampedY = Math.max(0, Math.min(y, this.height - newHeight));
-		chatCompact.setDarkAuctionTimerPosition(clampedX, clampedY);
+		DarkAuctionTimerSettings.setPosition(clampedX, clampedY);
 		return true;
 	}
 
