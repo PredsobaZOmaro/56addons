@@ -22,6 +22,10 @@ public final class Addons56ConfigStore {
 		copy.darkAuctionTimerScale = source.darkAuctionTimerScale;
 		copy.ooomagaSoundEnabled = source.ooomagaSoundEnabled;
 		copy.windowsXpSoundEnabled = source.windowsXpSoundEnabled;
+		copy.spidermanSoundEnabled = source.spidermanSoundEnabled;
+		copy.angelsoundSoundEnabled = source.angelsoundSoundEnabled;
+		copy.wowSoundEnabled = source.wowSoundEnabled;
+		copy.sadViolinSoundEnabled = source.sadViolinSoundEnabled;
 		return copy;
 	}
 

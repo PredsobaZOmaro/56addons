@@ -12,5 +12,33 @@
         "name": "addons56:windows_xp"
       }
     ]
+  },
+  "spiderman": {
+    "sounds": [
+      {
+        "name": "addons56:spiderman"
+      }
+    ]
+  },
+  "angelsound": {
+    "sounds": [
+      {
+        "name": "addons56:angelsound"
+      }
+    ]
+  },
+  "wow": {
+    "sounds": [
+      {
+        "name": "addons56:wow"
+      }
+    ]
+  },
+  "sad_violin": {
+    "sounds": [
+      {
+        "name": "addons56:sad_violin"
+      }
+    ]
   }
 }

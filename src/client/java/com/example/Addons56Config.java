@@ -24,6 +24,10 @@ public final class Addons56Config {
 	public float darkAuctionTimerScale = 1.0f;
 	public boolean ooomagaSoundEnabled = false;
 	public boolean windowsXpSoundEnabled = false;
+	public boolean spidermanSoundEnabled = false;
+	public boolean angelsoundSoundEnabled = false;
+	public boolean wowSoundEnabled = false;
+	public boolean sadViolinSoundEnabled = false;
 
 	public static Addons56Config load() {
 		if (!Files.exists(CONFIG_PATH)) {

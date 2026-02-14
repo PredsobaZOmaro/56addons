@@ -9,6 +9,7 @@ public class chatCompact implements ClientModInitializer {
 		ExampleMod.LOGGER.info("56addons chat compact enabled: {}", Addons56ConfigStore.isChatCompactEnabled());
 		Addons56Commands.register();
 		DarkAuctionTimerHud.initialize();
+		Addons56SoundTriggers.initialize();
 	}
 
 	public static boolean isChatCompactEnabled() {
