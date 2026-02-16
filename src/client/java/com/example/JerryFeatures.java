@@ -17,6 +17,7 @@ public final class JerryFeatures {
 	private static final Identifier HUD_ID = Identifier.of(ExampleMod.MOD_ID, "jerry_cooldown_hud");
 	private static final Pattern ANY_FORMAT_CODE = Pattern.compile("(?i)[&\u00A7].");
 	private static final Pattern JERRY_FOUND_PATTERN = Pattern.compile("^\\W*you found a (green|blue|purple|golden) jerry!$");
+	private static final Pattern JERRY_DISCOVERED_PATTERN = Pattern.compile("^\\W*you discovered a (green|blue|purple|golden) jerry!$");
 	private static final Pattern JERRY_HIDING_PATTERN = Pattern.compile("^\\W*some (green|blue|purple|golden) jerry was hiding, but you found it!$");
 	private static final Pattern JERRY_WILD_PATTERN = Pattern.compile("^\\W*a wild (green|blue|purple|golden) jerry spawned!$");
 	private static final Pattern JERRY_APPEARED_PATTERN = Pattern.compile("^\\W*a (green|blue|purple|golden) jerry appeared!$");
@@ -57,6 +58,7 @@ public final class JerryFeatures {
 		}
 		String normalized = normalizeMessage(incomingText.getString());
 		return JERRY_FOUND_PATTERN.matcher(normalized).matches()
+			|| JERRY_DISCOVERED_PATTERN.matcher(normalized).matches()
 			|| JERRY_HIDING_PATTERN.matcher(normalized).matches()
 			|| JERRY_WILD_PATTERN.matcher(normalized).matches()
 			|| JERRY_APPEARED_PATTERN.matcher(normalized).matches()
