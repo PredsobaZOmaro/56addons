@@ -40,7 +40,7 @@ public abstract class ChatHudCompactMixin {
 	)
 	private void addons56$compactIncoming(Text incomingText, MessageSignatureData signature, MessageIndicator indicator, CallbackInfo ci) {
 		// Sound triggers are independent from chat compaction and should run for every incoming line.
-		Addons56SoundTriggers.handleIncomingChatMessage(incomingText);
+		Addons56SoundTriggers.handleIncomingChatMessage(incomingText, signature);
 		JerryFeatures.handleIncomingChatMessage(incomingText, signature, indicator);
 
 		if (!chatCompact.isChatCompactEnabled()) {
