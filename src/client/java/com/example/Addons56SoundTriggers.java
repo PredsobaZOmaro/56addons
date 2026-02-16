@@ -36,10 +36,12 @@ public final class Addons56SoundTriggers {
 		.thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER);
 	private static final int RECENT_CHAT_WINDOW = 3;
 	private static final long CHAT_SOUND_COOLDOWN_MS = 450L;
+	private static final long CHAT_TRIGGER_DEDUP_MS = 3000L;
 	private static final long BOSS_SOUND_COOLDOWN_MS = 1500L;
 	private static final boolean DEBUG_SPIDERMAN = Boolean.getBoolean("addons56.debug.spiderman");
 	private static final Deque<String> recentMessages = new ArrayDeque<>();
 	private static final Map<String, Long> lastPlayedAtMsBySound = new HashMap<>();
+	private static final Map<String, Long> lastPlayedAtMsByTrigger = new HashMap<>();
 	private static boolean initialized;
 	private static boolean tarantulaBossActiveLastTick;
 	private static String lastSpidermanDebugSnapshot = "";
@@ -72,45 +74,45 @@ public final class Addons56SoundTriggers {
 		String combinedMessage = String.join(" ", recentMessages);
 
 		if (Addons56SoundSettings.isAngelsoundEnabled() && isPrimordialEyeDrop(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("angelsound", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("insane_drop_primordial_eye", "angelsound");
 		}
 		if (Addons56SoundSettings.isAngelsoundEnabled() && isTikiMaskOrTitanoboaShedDrop(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("angelsound", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("rare_drop_tiki_mask_or_titanoboa_shed", "angelsound");
 		}
 
 		if (Addons56SoundSettings.isWowEnabled() && isShriveledWaspDrop(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("wow", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("crazy_rare_drop_shriveled_wasp", "wow");
 		}
 
 		if (Addons56SoundSettings.isOoomagaEnabled() && isOoomagaDrop(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("ooomaga", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("crazy_rare_drop_ooomaga_set", "ooomaga");
 		}
 
 		if (Addons56SoundSettings.isSadViolinEnabled() && isEnsnaredSnailDrop(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("sad_violin", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("crazy_rare_drop_ensnared_snail", "sad_violin");
 		}
 		if (Addons56SoundSettings.isSadViolinEnabled() && isEnchantedClayBlockDrop(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("sad_violin", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("rare_drop_enchanted_clay_block", "sad_violin");
 		}
 
 		if (Addons56SoundSettings.isFaaahEnabled() && isOctopusTendrilOrTroubledBubbleDrop(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("faaah", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("rare_drop_octopus_tendril_or_troubled_bubble", "faaah");
 		}
 
 		if (Addons56SoundSettings.isJawsEnabled() && isTitanoboaSpawnMessage(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("jaws", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("spawn_titanoboa", "jaws");
 		}
 
 		if (Addons56SoundSettings.isWikitikiEnabled() && isWikiTikiSpawnMessage(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("wikitiki", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("spawn_wiki_tiki", "wikitiki");
 		}
 
 		if (Addons56SoundSettings.isAmogusEnabled() && isBlueRingedOctopusSpawnMessage(normalizedMessage, combinedMessage)) {
-			playSoundWithCooldown("amogus", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("spawn_blue_ringed_octopus", "amogus");
 		}
 
 		if (Addons56SoundSettings.isWindowsXpEnabled() && WINDOWS_XP_TRIGGERS.contains(normalizedMessage)) {
-			playSoundWithCooldown("windows_xp", CHAT_SOUND_COOLDOWN_MS);
+			playChatSoundForTrigger("windows_xp_chat_message", "windows_xp");
 		}
 	}
 
@@ -327,5 +329,18 @@ public final class Addons56SoundTriggers {
 		lastPlayedAtMsBySound.put(soundKey, now);
 		playSound(soundKey);
 		return true;
+	}
+
+	private static boolean playChatSoundForTrigger(String triggerKey, String soundKey) {
+		long now = System.currentTimeMillis();
+		Long lastPlay = lastPlayedAtMsByTrigger.get(triggerKey);
+		if (lastPlay != null && now - lastPlay < CHAT_TRIGGER_DEDUP_MS) {
+			return false;
+		}
+		boolean played = playSoundWithCooldown(soundKey, CHAT_SOUND_COOLDOWN_MS);
+		if (played) {
+			lastPlayedAtMsByTrigger.put(triggerKey, now);
+		}
+		return played;
 	}
 }

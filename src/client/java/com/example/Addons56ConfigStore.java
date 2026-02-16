@@ -30,6 +30,11 @@ public final class Addons56ConfigStore {
 		copy.wikitikiSoundEnabled = source.wikitikiSoundEnabled;
 		copy.amogusSoundEnabled = source.amogusSoundEnabled;
 		copy.faaahSoundEnabled = source.faaahSoundEnabled;
+		copy.jerryCooldownHudEnabled = source.jerryCooldownHudEnabled;
+		copy.jerryNotificationEnabled = source.jerryNotificationEnabled;
+		copy.jerryCooldownHudX = source.jerryCooldownHudX;
+		copy.jerryCooldownHudY = source.jerryCooldownHudY;
+		copy.jerryCooldownHudScale = source.jerryCooldownHudScale;
 		return copy;
 	}
 

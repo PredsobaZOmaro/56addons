@@ -32,6 +32,11 @@ public final class Addons56Config {
 	public boolean wikitikiSoundEnabled = false;
 	public boolean amogusSoundEnabled = false;
 	public boolean faaahSoundEnabled = false;
+	public boolean jerryCooldownHudEnabled = false;
+	public boolean jerryNotificationEnabled = false;
+	public int jerryCooldownHudX = 10;
+	public int jerryCooldownHudY = 24;
+	public float jerryCooldownHudScale = 1.0f;
 
 	public static Addons56Config load() {
 		if (!Files.exists(CONFIG_PATH)) {
@@ -70,8 +75,14 @@ public final class Addons56Config {
 		if (!Float.isFinite(darkAuctionTimerScale)) {
 			darkAuctionTimerScale = 1.0f;
 		}
+		if (!Float.isFinite(jerryCooldownHudScale)) {
+			jerryCooldownHudScale = 1.0f;
+		}
 		darkAuctionTimerScale = Math.max(0.5f, Math.min(3.0f, darkAuctionTimerScale));
+		jerryCooldownHudScale = Math.max(0.5f, Math.min(3.0f, jerryCooldownHudScale));
 		darkAuctionTimerX = Math.max(0, darkAuctionTimerX);
 		darkAuctionTimerY = Math.max(0, darkAuctionTimerY);
+		jerryCooldownHudX = Math.max(0, jerryCooldownHudX);
+		jerryCooldownHudY = Math.max(0, jerryCooldownHudY);
 	}
 }
