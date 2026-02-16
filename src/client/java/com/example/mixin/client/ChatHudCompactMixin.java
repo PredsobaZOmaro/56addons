@@ -2,6 +2,7 @@ package com.example.mixin.client;
 
 import com.example.Addons56SoundTriggers;
 import com.example.chatCompact;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
@@ -20,6 +21,10 @@ import java.util.List;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudCompactMixin {
+	@Shadow
+	@Final
+	private MinecraftClient client;
+
 	@Shadow
 	@Final
 	private List<ChatHudLine> messages;
@@ -41,7 +46,7 @@ public abstract class ChatHudCompactMixin {
 		}
 
 		String raw = incomingText.getString();
-		String normalized = normalize(raw);
+		String normalized = normalizeForComparison(raw);
 		if (normalized.isEmpty() || shouldIgnoreFromCompaction(normalized)) {
 			return;
 		}
@@ -58,20 +63,16 @@ public abstract class ChatHudCompactMixin {
 
 		// Move the compacted line to the newest position (ChatHud stores newest at index 0).
 		messages.remove(matchIndex);
-		int newestTick = addons56$getLatestMessageTick();
-		messages.add(0, new ChatHudLine(newestTick + 1, replacement, signature, indicator));
+		messages.add(0, new ChatHudLine(addons56$getCurrentHudTick(), replacement, signature, indicator));
 		refresh();
 		ci.cancel();
 	}
 
-	private int addons56$getLatestMessageTick() {
-		int latestTick = 0;
-		for (ChatHudLine line : messages) {
-			if (line.creationTick() > latestTick) {
-				latestTick = line.creationTick();
-			}
+	private int addons56$getCurrentHudTick() {
+		if (client != null && client.inGameHud != null) {
+			return client.inGameHud.getTicks();
 		}
-		return latestTick;
+		return 0;
 	}
 
 	private int addons56$findRecentMatchingMessageIndex(String normalizedIncoming) {
@@ -98,7 +99,7 @@ public abstract class ChatHudCompactMixin {
 				continue;
 			}
 
-			String normalizedExisting = normalize(line.content().getString());
+			String normalizedExisting = normalizeForComparison(line.content().getString());
 			if (normalizedExisting.isEmpty() || shouldIgnoreFromCompaction(normalizedExisting)) {
 				continue;
 			}
@@ -128,15 +129,13 @@ public abstract class ChatHudCompactMixin {
 		return true;
 	}
 
-	private static String normalize(String raw) {
+	private static String normalizeForComparison(String raw) {
 		if (raw == null) {
 			return "";
 		}
 
 		String normalized = raw.trim();
 		normalized = normalized.replaceAll("\\s*\\(\\d+\\)\\s*$", "");
-		normalized = normalized.replaceFirst("^<[^>]{1,32}>\\s*", "");
-		normalized = normalized.replaceFirst("^[^:\\n]{1,32}:\\s+", "");
 		normalized = normalized.replaceAll("\\s+", " ");
 		return normalized;
 	}
