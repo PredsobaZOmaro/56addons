@@ -28,6 +28,10 @@ public final class Addons56Config {
 	public boolean angelsoundSoundEnabled = false;
 	public boolean wowSoundEnabled = false;
 	public boolean sadViolinSoundEnabled = false;
+	public boolean jawsSoundEnabled = false;
+	public boolean wikitikiSoundEnabled = false;
+	public boolean amogusSoundEnabled = false;
+	public boolean faaahSoundEnabled = false;
 
 	public static Addons56Config load() {
 		if (!Files.exists(CONFIG_PATH)) {

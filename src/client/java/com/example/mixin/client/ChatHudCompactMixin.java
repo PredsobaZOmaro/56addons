@@ -1,6 +1,5 @@
 package com.example.mixin.client;
 
-import com.example.ExampleMod;
 import com.example.Addons56SoundTriggers;
 import com.example.chatCompact;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -21,8 +20,6 @@ import java.util.List;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudCompactMixin {
-	private static final boolean DEBUG_CHAT_COMPACT = true;
-
 	@Shadow
 	@Final
 	private List<ChatHudLine> messages;
@@ -51,9 +48,6 @@ public abstract class ChatHudCompactMixin {
 
 		int matchIndex = addons56$findRecentMatchingMessageIndex(normalized);
 		if (matchIndex < 0) {
-			if (DEBUG_CHAT_COMPACT) {
-				ExampleMod.LOGGER.info("56addons compact track new: {}", normalized);
-			}
 			return;
 		}
 
@@ -67,9 +61,6 @@ public abstract class ChatHudCompactMixin {
 		int newestTick = addons56$getLatestMessageTick();
 		messages.add(0, new ChatHudLine(newestTick + 1, replacement, signature, indicator));
 		refresh();
-		if (DEBUG_CHAT_COMPACT) {
-			ExampleMod.LOGGER.info("56addons compacted '{}' to ({})", normalized, nextCount);
-		}
 		ci.cancel();
 	}
 

@@ -24,6 +24,10 @@ public class Addons56ConfigScreen extends Screen {
 	private ButtonWidget soundsAngelsoundButton;
 	private ButtonWidget soundsWowButton;
 	private ButtonWidget soundsSadViolinButton;
+	private ButtonWidget soundsJawsButton;
+	private ButtonWidget soundsWikitikiButton;
+	private ButtonWidget soundsAmogusButton;
+	private ButtonWidget soundsFaaahButton;
 	private ButtonWidget saveButton;
 	private boolean pendingChatCompactEnabled;
 	private int pendingChatCompactWindowSeconds;
@@ -35,6 +39,10 @@ public class Addons56ConfigScreen extends Screen {
 	private boolean pendingAngelsoundSoundEnabled;
 	private boolean pendingWowSoundEnabled;
 	private boolean pendingSadViolinSoundEnabled;
+	private boolean pendingJawsSoundEnabled;
+	private boolean pendingWikitikiSoundEnabled;
+	private boolean pendingAmogusSoundEnabled;
+	private boolean pendingFaaahSoundEnabled;
 	private boolean hasUnsavedChanges;
 
 	public Addons56ConfigScreen(Screen parent) {
@@ -118,6 +126,26 @@ public class Addons56ConfigScreen extends Screen {
 			markDirty();
 		}).dimensions(centerX - 100, 218, 200, 20).build());
 
+		this.soundsJawsButton = addDrawableChild(ButtonWidget.builder(getJawsLabel(), button -> {
+			pendingJawsSoundEnabled = !pendingJawsSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 244, 200, 20).build());
+
+		this.soundsWikitikiButton = addDrawableChild(ButtonWidget.builder(getWikitikiLabel(), button -> {
+			pendingWikitikiSoundEnabled = !pendingWikitikiSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 270, 200, 20).build());
+
+		this.soundsAmogusButton = addDrawableChild(ButtonWidget.builder(getAmogusLabel(), button -> {
+			pendingAmogusSoundEnabled = !pendingAmogusSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 296, 200, 20).build());
+
+		this.soundsFaaahButton = addDrawableChild(ButtonWidget.builder(getFaaahLabel(), button -> {
+			pendingFaaahSoundEnabled = !pendingFaaahSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 322, 200, 20).build());
+
 		this.saveButton = addDrawableChild(ButtonWidget.builder(Text.literal("Save Changes"), button -> savePendingChanges())
 			.dimensions(centerX - 100, this.height - 36, 98, 20)
 			.build());
@@ -178,6 +206,22 @@ public class Addons56ConfigScreen extends Screen {
 		return Text.literal("sad_violin: " + (pendingSadViolinSoundEnabled ? "ON" : "OFF"));
 	}
 
+	private Text getJawsLabel() {
+		return Text.literal("jaws: " + (pendingJawsSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getWikitikiLabel() {
+		return Text.literal("wikitiki: " + (pendingWikitikiSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getAmogusLabel() {
+		return Text.literal("amogus: " + (pendingAmogusSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getFaaahLabel() {
+		return Text.literal("faaah: " + (pendingFaaahSoundEnabled ? "ON" : "OFF"));
+	}
+
 	private void updateVisibleControls() {
 		if (generalEditGuiButton != null) {
 			generalEditGuiButton.visible = selectedTab == Tab.GENERAL;
@@ -232,6 +276,22 @@ public class Addons56ConfigScreen extends Screen {
 			soundsSadViolinButton.visible = selectedTab == Tab.SOUNDS;
 			soundsSadViolinButton.setMessage(getSadViolinLabel());
 		}
+		if (soundsJawsButton != null) {
+			soundsJawsButton.visible = selectedTab == Tab.SOUNDS;
+			soundsJawsButton.setMessage(getJawsLabel());
+		}
+		if (soundsWikitikiButton != null) {
+			soundsWikitikiButton.visible = selectedTab == Tab.SOUNDS;
+			soundsWikitikiButton.setMessage(getWikitikiLabel());
+		}
+		if (soundsAmogusButton != null) {
+			soundsAmogusButton.visible = selectedTab == Tab.SOUNDS;
+			soundsAmogusButton.setMessage(getAmogusLabel());
+		}
+		if (soundsFaaahButton != null) {
+			soundsFaaahButton.visible = selectedTab == Tab.SOUNDS;
+			soundsFaaahButton.setMessage(getFaaahLabel());
+		}
 
 		if (generalTabButton != null) {
 			generalTabButton.active = selectedTab != Tab.GENERAL;
@@ -259,6 +319,10 @@ public class Addons56ConfigScreen extends Screen {
 		pendingAngelsoundSoundEnabled = current.angelsoundSoundEnabled;
 		pendingWowSoundEnabled = current.wowSoundEnabled;
 		pendingSadViolinSoundEnabled = current.sadViolinSoundEnabled;
+		pendingJawsSoundEnabled = current.jawsSoundEnabled;
+		pendingWikitikiSoundEnabled = current.wikitikiSoundEnabled;
+		pendingAmogusSoundEnabled = current.amogusSoundEnabled;
+		pendingFaaahSoundEnabled = current.faaahSoundEnabled;
 		hasUnsavedChanges = false;
 	}
 
@@ -280,6 +344,10 @@ public class Addons56ConfigScreen extends Screen {
 		updated.angelsoundSoundEnabled = pendingAngelsoundSoundEnabled;
 		updated.wowSoundEnabled = pendingWowSoundEnabled;
 		updated.sadViolinSoundEnabled = pendingSadViolinSoundEnabled;
+		updated.jawsSoundEnabled = pendingJawsSoundEnabled;
+		updated.wikitikiSoundEnabled = pendingWikitikiSoundEnabled;
+		updated.amogusSoundEnabled = pendingAmogusSoundEnabled;
+		updated.faaahSoundEnabled = pendingFaaahSoundEnabled;
 		Addons56ConfigStore.apply(updated);
 		hasUnsavedChanges = false;
 		updateVisibleControls();
@@ -305,7 +373,7 @@ public class Addons56ConfigScreen extends Screen {
 		if (selectedTab == Tab.GENERAL) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("HUD and notification settings"), this.width / 2, 170, 0xDDDDDD);
 		} else if (selectedTab == Tab.SOUNDS) {
-			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Toggle sound files"), this.width / 2, 248, 0xDDDDDD);
+			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Toggle sound files"), this.width / 2, this.height - 62, 0xDDDDDD);
 		}
 		if (hasUnsavedChanges) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Unsaved changes"), this.width / 2, this.height - 48, 0xFFAA00);

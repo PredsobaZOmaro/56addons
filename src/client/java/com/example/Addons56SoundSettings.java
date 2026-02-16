@@ -63,4 +63,44 @@ public final class Addons56SoundSettings {
 		config.sadViolinSoundEnabled = enabled;
 		config.save();
 	}
+
+	public static boolean isJawsEnabled() {
+		return Addons56ConfigStore.getOrCreateConfig().jawsSoundEnabled;
+	}
+
+	public static void setJawsEnabled(boolean enabled) {
+		Addons56Config config = Addons56ConfigStore.getOrCreateConfig();
+		config.jawsSoundEnabled = enabled;
+		config.save();
+	}
+
+	public static boolean isWikitikiEnabled() {
+		return Addons56ConfigStore.getOrCreateConfig().wikitikiSoundEnabled;
+	}
+
+	public static void setWikitikiEnabled(boolean enabled) {
+		Addons56Config config = Addons56ConfigStore.getOrCreateConfig();
+		config.wikitikiSoundEnabled = enabled;
+		config.save();
+	}
+
+	public static boolean isAmogusEnabled() {
+		return Addons56ConfigStore.getOrCreateConfig().amogusSoundEnabled;
+	}
+
+	public static void setAmogusEnabled(boolean enabled) {
+		Addons56Config config = Addons56ConfigStore.getOrCreateConfig();
+		config.amogusSoundEnabled = enabled;
+		config.save();
+	}
+
+	public static boolean isFaaahEnabled() {
+		return Addons56ConfigStore.getOrCreateConfig().faaahSoundEnabled;
+	}
+
+	public static void setFaaahEnabled(boolean enabled) {
+		Addons56Config config = Addons56ConfigStore.getOrCreateConfig();
+		config.faaahSoundEnabled = enabled;
+		config.save();
+	}
 }
