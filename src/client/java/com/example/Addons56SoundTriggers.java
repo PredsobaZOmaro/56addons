@@ -35,11 +35,12 @@ public final class Addons56SoundTriggers {
 		.reversed()
 		.thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER);
 	private static final int RECENT_CHAT_WINDOW = 3;
+	private static final long RECENT_CHAT_MAX_AGE_MS = 1500L;
 	private static final long CHAT_SOUND_COOLDOWN_MS = 450L;
 	private static final long CHAT_TRIGGER_DEDUP_MS = 3000L;
 	private static final long BOSS_SOUND_COOLDOWN_MS = 1500L;
 	private static final boolean DEBUG_SPIDERMAN = Boolean.getBoolean("addons56.debug.spiderman");
-	private static final Deque<String> recentMessages = new ArrayDeque<>();
+	private static final Deque<RecentChatMessage> recentMessages = new ArrayDeque<>();
 	private static final Map<String, Long> lastPlayedAtMsBySound = new HashMap<>();
 	private static final Map<String, Long> lastPlayedAtMsByTrigger = new HashMap<>();
 	private static boolean initialized;
@@ -67,11 +68,18 @@ public final class Addons56SoundTriggers {
 			return;
 		}
 
-		recentMessages.addLast(normalizedMessage);
+		long now = System.currentTimeMillis();
+		recentMessages.addLast(new RecentChatMessage(normalizedMessage, now));
+		while (!recentMessages.isEmpty() && now - recentMessages.peekFirst().timestampMs() > RECENT_CHAT_MAX_AGE_MS) {
+			recentMessages.removeFirst();
+		}
 		while (recentMessages.size() > RECENT_CHAT_WINDOW) {
 			recentMessages.removeFirst();
 		}
-		String combinedMessage = String.join(" ", recentMessages);
+		String combinedMessage = recentMessages.stream()
+			.map(RecentChatMessage::text)
+			.reduce((left, right) -> left + " " + right)
+			.orElse("");
 
 		if (Addons56SoundSettings.isAngelsoundEnabled() && isPrimordialEyeDrop(normalizedMessage, combinedMessage)) {
 			playChatSoundForTrigger("insane_drop_primordial_eye", "angelsound");
@@ -342,5 +350,8 @@ public final class Addons56SoundTriggers {
 			lastPlayedAtMsByTrigger.put(triggerKey, now);
 		}
 		return played;
+	}
+
+	private record RecentChatMessage(String text, long timestampMs) {
 	}
 }
