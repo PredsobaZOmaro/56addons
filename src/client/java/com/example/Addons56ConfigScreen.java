@@ -5,9 +5,19 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Addons56ConfigScreen extends Screen {
+	private static final int SOUNDS_BUTTON_HEIGHT = 20;
+	private static final int SOUNDS_BUTTON_SPACING = 26;
+	private static final int SOUNDS_CONTAINER_WIDTH = 280;
+	private static final int SOUNDS_CONTAINER_PADDING = 8;
+	private static final int SOUNDS_SCROLLBAR_WIDTH = 6;
+	private static final int SOUNDS_SCROLLBAR_GAP = 6;
 	private final Screen parent;
 	private Tab selectedTab = Tab.GENERAL;
+	private final List<ButtonWidget> soundButtons = new ArrayList<>();
 	private ButtonWidget generalTabButton;
 	private ButtonWidget chatTabButton;
 	private ButtonWidget soundsTabButton;
@@ -44,6 +54,8 @@ public class Addons56ConfigScreen extends Screen {
 	private boolean pendingAmogusSoundEnabled;
 	private boolean pendingFaaahSoundEnabled;
 	private boolean hasUnsavedChanges;
+	private int soundsScrollOffset;
+	private int soundsMaxScroll;
 
 	public Addons56ConfigScreen(Screen parent) {
 		super(Text.literal("56addons"));
@@ -56,6 +68,8 @@ public class Addons56ConfigScreen extends Screen {
 
 		int centerX = this.width / 2;
 		int y = 42;
+		int soundsButtonWidth = getSoundsButtonWidth();
+		int soundsButtonX = centerX - soundsButtonWidth / 2;
 
 		generalTabButton = addDrawableChild(createTabButton(Tab.GENERAL, centerX - 155, y));
 		chatTabButton = addDrawableChild(createTabButton(Tab.CHAT, centerX - 50, y));
@@ -99,52 +113,62 @@ public class Addons56ConfigScreen extends Screen {
 		this.soundsOoomagaButton = addDrawableChild(ButtonWidget.builder(getOoomagaLabel(), button -> {
 			pendingOoomagaSoundEnabled = !pendingOoomagaSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 88, 200, 20).build());
+		}).dimensions(soundsButtonX, 88, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsOoomagaButton);
 
 		this.soundsWindowsXpButton = addDrawableChild(ButtonWidget.builder(getWindowsXpLabel(), button -> {
 			pendingWindowsXpSoundEnabled = !pendingWindowsXpSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 114, 200, 20).build());
+		}).dimensions(soundsButtonX, 114, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsWindowsXpButton);
 
 		this.soundsSpidermanButton = addDrawableChild(ButtonWidget.builder(getSpidermanLabel(), button -> {
 			pendingSpidermanSoundEnabled = !pendingSpidermanSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 140, 200, 20).build());
+		}).dimensions(soundsButtonX, 140, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsSpidermanButton);
 
 		this.soundsAngelsoundButton = addDrawableChild(ButtonWidget.builder(getAngelsoundLabel(), button -> {
 			pendingAngelsoundSoundEnabled = !pendingAngelsoundSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 166, 200, 20).build());
+		}).dimensions(soundsButtonX, 166, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsAngelsoundButton);
 
 		this.soundsWowButton = addDrawableChild(ButtonWidget.builder(getWowLabel(), button -> {
 			pendingWowSoundEnabled = !pendingWowSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 192, 200, 20).build());
+		}).dimensions(soundsButtonX, 192, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsWowButton);
 
 		this.soundsSadViolinButton = addDrawableChild(ButtonWidget.builder(getSadViolinLabel(), button -> {
 			pendingSadViolinSoundEnabled = !pendingSadViolinSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 218, 200, 20).build());
+		}).dimensions(soundsButtonX, 218, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsSadViolinButton);
 
 		this.soundsJawsButton = addDrawableChild(ButtonWidget.builder(getJawsLabel(), button -> {
 			pendingJawsSoundEnabled = !pendingJawsSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 244, 200, 20).build());
+		}).dimensions(soundsButtonX, 244, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsJawsButton);
 
 		this.soundsWikitikiButton = addDrawableChild(ButtonWidget.builder(getWikitikiLabel(), button -> {
 			pendingWikitikiSoundEnabled = !pendingWikitikiSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 270, 200, 20).build());
+		}).dimensions(soundsButtonX, 270, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsWikitikiButton);
 
 		this.soundsAmogusButton = addDrawableChild(ButtonWidget.builder(getAmogusLabel(), button -> {
 			pendingAmogusSoundEnabled = !pendingAmogusSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 296, 200, 20).build());
+		}).dimensions(soundsButtonX, 296, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsAmogusButton);
 
 		this.soundsFaaahButton = addDrawableChild(ButtonWidget.builder(getFaaahLabel(), button -> {
 			pendingFaaahSoundEnabled = !pendingFaaahSoundEnabled;
 			markDirty();
-		}).dimensions(centerX - 100, 322, 200, 20).build());
+		}).dimensions(soundsButtonX, 322, soundsButtonWidth, 20).build());
+		soundButtons.add(this.soundsFaaahButton);
 
 		this.saveButton = addDrawableChild(ButtonWidget.builder(Text.literal("Save Changes"), button -> savePendingChanges())
 			.dimensions(centerX - 100, this.height - 36, 98, 20)
@@ -253,45 +277,36 @@ public class Addons56ConfigScreen extends Screen {
 		}
 
 		if (soundsOoomagaButton != null) {
-			soundsOoomagaButton.visible = selectedTab == Tab.SOUNDS;
 			soundsOoomagaButton.setMessage(getOoomagaLabel());
 		}
 		if (soundsWindowsXpButton != null) {
-			soundsWindowsXpButton.visible = selectedTab == Tab.SOUNDS;
 			soundsWindowsXpButton.setMessage(getWindowsXpLabel());
 		}
 		if (soundsSpidermanButton != null) {
-			soundsSpidermanButton.visible = selectedTab == Tab.SOUNDS;
 			soundsSpidermanButton.setMessage(getSpidermanLabel());
 		}
 		if (soundsAngelsoundButton != null) {
-			soundsAngelsoundButton.visible = selectedTab == Tab.SOUNDS;
 			soundsAngelsoundButton.setMessage(getAngelsoundLabel());
 		}
 		if (soundsWowButton != null) {
-			soundsWowButton.visible = selectedTab == Tab.SOUNDS;
 			soundsWowButton.setMessage(getWowLabel());
 		}
 		if (soundsSadViolinButton != null) {
-			soundsSadViolinButton.visible = selectedTab == Tab.SOUNDS;
 			soundsSadViolinButton.setMessage(getSadViolinLabel());
 		}
 		if (soundsJawsButton != null) {
-			soundsJawsButton.visible = selectedTab == Tab.SOUNDS;
 			soundsJawsButton.setMessage(getJawsLabel());
 		}
 		if (soundsWikitikiButton != null) {
-			soundsWikitikiButton.visible = selectedTab == Tab.SOUNDS;
 			soundsWikitikiButton.setMessage(getWikitikiLabel());
 		}
 		if (soundsAmogusButton != null) {
-			soundsAmogusButton.visible = selectedTab == Tab.SOUNDS;
 			soundsAmogusButton.setMessage(getAmogusLabel());
 		}
 		if (soundsFaaahButton != null) {
-			soundsFaaahButton.visible = selectedTab == Tab.SOUNDS;
 			soundsFaaahButton.setMessage(getFaaahLabel());
 		}
+		updateSoundsScrollLayout();
 
 		if (generalTabButton != null) {
 			generalTabButton.active = selectedTab != Tab.GENERAL;
@@ -373,11 +388,112 @@ public class Addons56ConfigScreen extends Screen {
 		if (selectedTab == Tab.GENERAL) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("HUD and notification settings"), this.width / 2, 170, 0xDDDDDD);
 		} else if (selectedTab == Tab.SOUNDS) {
+			int left = getSoundsContainerLeft();
+			int right = left + SOUNDS_CONTAINER_WIDTH;
+			int top = getSoundsContainerTop();
+			int bottom = getSoundsContainerBottom();
+			context.fill(left, top, right, bottom, 0x70101010);
+			context.fill(left, top, right, top + 1, 0x70202020);
+			context.fill(left, bottom - 1, right, bottom, 0x70202020);
+			context.fill(left, top, left + 1, bottom, 0x70202020);
+			context.fill(right - 1, top, right, bottom, 0x70202020);
+
+			int viewportTop = getSoundsViewportTop();
+			int viewportBottom = getSoundsViewportBottom();
+			int trackLeft = right - SOUNDS_CONTAINER_PADDING - SOUNDS_SCROLLBAR_WIDTH;
+			int trackRight = trackLeft + SOUNDS_SCROLLBAR_WIDTH;
+			context.fill(trackLeft, viewportTop, trackRight, viewportBottom, 0x90303030);
+			drawSoundsScrollbarThumb(context, trackLeft, trackRight, viewportTop, viewportBottom);
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Toggle sound files"), this.width / 2, this.height - 62, 0xDDDDDD);
 		}
 		if (hasUnsavedChanges) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Unsaved changes"), this.width / 2, this.height - 48, 0xFFAA00);
 		}
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		if (selectedTab == Tab.SOUNDS && isInsideSoundsContainer(mouseX, mouseY)) {
+			if (verticalAmount > 0) {
+				soundsScrollOffset -= SOUNDS_BUTTON_SPACING;
+			} else if (verticalAmount < 0) {
+				soundsScrollOffset += SOUNDS_BUTTON_SPACING;
+			}
+			updateSoundsScrollLayout();
+			return true;
+		}
+		return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+	}
+
+	private int getSoundsContainerLeft() {
+		return this.width / 2 - SOUNDS_CONTAINER_WIDTH / 2;
+	}
+
+	private int getSoundsContainerTop() {
+		return 84;
+	}
+
+	private int getSoundsContainerBottom() {
+		return this.height - 76;
+	}
+
+	private int getSoundsViewportTop() {
+		return getSoundsContainerTop() + SOUNDS_CONTAINER_PADDING;
+	}
+
+	private int getSoundsViewportBottom() {
+		return getSoundsContainerBottom() - SOUNDS_CONTAINER_PADDING;
+	}
+
+	private int getSoundsButtonWidth() {
+		return SOUNDS_CONTAINER_WIDTH - SOUNDS_CONTAINER_PADDING * 2 - SOUNDS_SCROLLBAR_WIDTH - SOUNDS_SCROLLBAR_GAP;
+	}
+
+	private boolean isInsideSoundsContainer(double mouseX, double mouseY) {
+		return mouseX >= getSoundsContainerLeft()
+			&& mouseX <= getSoundsContainerLeft() + SOUNDS_CONTAINER_WIDTH
+			&& mouseY >= getSoundsContainerTop()
+			&& mouseY <= getSoundsContainerBottom();
+	}
+
+	private void updateSoundsScrollLayout() {
+		if (soundButtons.isEmpty()) {
+			return;
+		}
+
+		int contentHeight = soundButtons.size() * SOUNDS_BUTTON_SPACING;
+		int viewportHeight = Math.max(0, getSoundsContainerBottom() - getSoundsContainerTop() - SOUNDS_CONTAINER_PADDING * 2);
+		soundsMaxScroll = Math.max(0, contentHeight - viewportHeight);
+		soundsScrollOffset = Math.max(0, Math.min(soundsScrollOffset, soundsMaxScroll));
+
+		int buttonX = this.width / 2 - getSoundsButtonWidth() / 2;
+		int viewportTop = getSoundsViewportTop();
+		int viewportBottom = getSoundsViewportBottom();
+
+		for (int i = 0; i < soundButtons.size(); i++) {
+			ButtonWidget button = soundButtons.get(i);
+			int buttonY = viewportTop + i * SOUNDS_BUTTON_SPACING - soundsScrollOffset;
+			button.setPosition(buttonX, buttonY);
+			boolean fullyInsideViewport = buttonY >= viewportTop && buttonY + SOUNDS_BUTTON_HEIGHT <= viewportBottom;
+			button.visible = selectedTab == Tab.SOUNDS && fullyInsideViewport;
+			button.active = button.visible;
+		}
+	}
+
+	private void drawSoundsScrollbarThumb(DrawContext context, int trackLeft, int trackRight, int viewportTop, int viewportBottom) {
+		int viewportHeight = Math.max(1, viewportBottom - viewportTop);
+		int contentHeight = Math.max(1, soundButtons.size() * SOUNDS_BUTTON_SPACING);
+
+		if (soundsMaxScroll <= 0) {
+			context.fill(trackLeft, viewportTop, trackRight, viewportBottom, 0x70484848);
+			return;
+		}
+
+		int thumbHeight = Math.max(16, (int) ((viewportHeight * (double) viewportHeight) / contentHeight));
+		int thumbRange = Math.max(1, viewportHeight - thumbHeight);
+		int thumbTop = viewportTop + (int) ((soundsScrollOffset / (double) soundsMaxScroll) * thumbRange);
+		int thumbBottom = Math.min(viewportBottom, thumbTop + thumbHeight);
+		context.fill(trackLeft, thumbTop, trackRight, thumbBottom, 0xB0A8A8A8);
 	}
 
 	private enum Tab {
