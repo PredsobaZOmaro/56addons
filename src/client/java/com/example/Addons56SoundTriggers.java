@@ -3,6 +3,7 @@ package com.example;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.scoreboard.ScoreboardEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
@@ -58,8 +59,12 @@ public final class Addons56SoundTriggers {
 		initialized = true;
 	}
 
-	public static void handleIncomingChatMessage(Text incomingText) {
+	public static void handleIncomingChatMessage(Text incomingText, MessageSignatureData signature) {
 		if (incomingText == null) {
+			return;
+		}
+		// Signed chat lines are player messages (guild/party/all); ignore to prevent pasted false positives.
+		if (signature != null) {
 			return;
 		}
 
@@ -250,28 +255,28 @@ public final class Addons56SoundTriggers {
 	}
 
 	private static boolean isPrimordialEyeDrop(String normalizedMessage, String combinedMessage) {
-		return containsAll(normalizedMessage, "insane drop!", "primordial eye")
-			|| containsAll(combinedMessage, "insane drop!", "primordial eye");
+		return startsWithAndContainsAll(normalizedMessage, "insane drop!", "primordial eye")
+			|| startsWithAndContainsAll(combinedMessage, "insane drop!", "primordial eye");
 	}
 
 	private static boolean isShriveledWaspDrop(String normalizedMessage, String combinedMessage) {
-		return containsAll(normalizedMessage, "crazy rare drop!", "shriveled wasp")
-			|| containsAll(combinedMessage, "crazy rare drop!", "shriveled wasp");
+		return startsWithAndContainsAll(normalizedMessage, "crazy rare drop!", "shriveled wasp")
+			|| startsWithAndContainsAll(combinedMessage, "crazy rare drop!", "shriveled wasp");
 	}
 
 	private static boolean isOoomagaDrop(String normalizedMessage, String combinedMessage) {
-		boolean direct = containsAll(normalizedMessage, "crazy rare drop!", "fly swatter")
-			|| containsAll(normalizedMessage, "crazy rare drop!", "digested mosquito")
-			|| containsAll(normalizedMessage, "crazy rare drop!", "vial of venom");
-		boolean wrapped = containsAll(combinedMessage, "crazy rare drop!", "fly swatter")
-			|| containsAll(combinedMessage, "crazy rare drop!", "digested mosquito")
-			|| containsAll(combinedMessage, "crazy rare drop!", "vial of venom");
+		boolean direct = startsWithAndContainsAll(normalizedMessage, "crazy rare drop!", "fly swatter")
+			|| startsWithAndContainsAll(normalizedMessage, "crazy rare drop!", "digested mosquito")
+			|| startsWithAndContainsAll(normalizedMessage, "crazy rare drop!", "vial of venom");
+		boolean wrapped = startsWithAndContainsAll(combinedMessage, "crazy rare drop!", "fly swatter")
+			|| startsWithAndContainsAll(combinedMessage, "crazy rare drop!", "digested mosquito")
+			|| startsWithAndContainsAll(combinedMessage, "crazy rare drop!", "vial of venom");
 		return direct || wrapped;
 	}
 
 	private static boolean isEnsnaredSnailDrop(String normalizedMessage, String combinedMessage) {
-		return containsAll(normalizedMessage, "crazy rare drop!", "ensnared snail")
-			|| containsAll(combinedMessage, "crazy rare drop!", "ensnared snail");
+		return startsWithAndContainsAll(normalizedMessage, "crazy rare drop!", "ensnared snail")
+			|| startsWithAndContainsAll(combinedMessage, "crazy rare drop!", "ensnared snail");
 	}
 
 	private static boolean isTikiMaskOrTitanoboaShedDrop(String normalizedMessage, String combinedMessage) {
@@ -289,23 +294,23 @@ public final class Addons56SoundTriggers {
 	}
 
 	private static boolean isRareDropForItem(String normalizedMessage, String combinedMessage, String itemName) {
-		return containsAll(normalizedMessage, "rare drop!", itemName)
-			|| containsAll(combinedMessage, "rare drop!", itemName);
+		return startsWithAndContainsAll(normalizedMessage, "rare drop!", itemName)
+			|| startsWithAndContainsAll(combinedMessage, "rare drop!", itemName);
 	}
 
 	private static boolean isTitanoboaSpawnMessage(String normalizedMessage, String combinedMessage) {
-		return containsAll(normalizedMessage, "a massive titanoboa surfaces", "stretches as far as the eye can see")
-			|| containsAll(combinedMessage, "a massive titanoboa surfaces", "stretches as far as the eye can see");
+		return startsWithAndContainsAll(normalizedMessage, "a massive titanoboa surfaces", "stretches as far as the eye can see")
+			|| startsWithAndContainsAll(combinedMessage, "a massive titanoboa surfaces", "stretches as far as the eye can see");
 	}
 
 	private static boolean isWikiTikiSpawnMessage(String normalizedMessage, String combinedMessage) {
-		return containsAll(normalizedMessage, "the water bubbles and froths", "disturbed the wiki tiki", "you shall pay the price")
-			|| containsAll(combinedMessage, "the water bubbles and froths", "disturbed the wiki tiki", "you shall pay the price");
+		return startsWithAndContainsAll(normalizedMessage, "the water bubbles and froths", "disturbed the wiki tiki", "you shall pay the price")
+			|| startsWithAndContainsAll(combinedMessage, "the water bubbles and froths", "disturbed the wiki tiki", "you shall pay the price");
 	}
 
 	private static boolean isBlueRingedOctopusSpawnMessage(String normalizedMessage, String combinedMessage) {
-		return containsAll(normalizedMessage, "a garish set of tentacles arise", "blue ringed octopus")
-			|| containsAll(combinedMessage, "a garish set of tentacles arise", "blue ringed octopus");
+		return startsWithAndContainsAll(normalizedMessage, "a garish set of tentacles arise", "blue ringed octopus")
+			|| startsWithAndContainsAll(combinedMessage, "a garish set of tentacles arise", "blue ringed octopus");
 	}
 
 	private static boolean containsAll(String source, String... snippets) {
@@ -315,6 +320,13 @@ public final class Addons56SoundTriggers {
 			}
 		}
 		return true;
+	}
+
+	private static boolean startsWithAndContainsAll(String source, String prefix, String... snippets) {
+		if (!source.startsWith(prefix)) {
+			return false;
+		}
+		return containsAll(source, snippets);
 	}
 
 	private static void playSound(String soundKey) {

@@ -16,7 +16,12 @@ import java.util.regex.Pattern;
 public final class JerryFeatures {
 	private static final Identifier HUD_ID = Identifier.of(ExampleMod.MOD_ID, "jerry_cooldown_hud");
 	private static final Pattern ANY_FORMAT_CODE = Pattern.compile("(?i)[&\u00A7].");
-	private static final Pattern HIDDEN_JERRY_PATTERN = Pattern.compile("^\\W*you located a hidden (green|blue|purple|golden) jerry!$");
+	private static final Pattern JERRY_FOUND_PATTERN = Pattern.compile("^\\W*you found a (green|blue|purple|golden) jerry!$");
+	private static final Pattern JERRY_HIDING_PATTERN = Pattern.compile("^\\W*some (green|blue|purple|golden) jerry was hiding, but you found it!$");
+	private static final Pattern JERRY_WILD_PATTERN = Pattern.compile("^\\W*a wild (green|blue|purple|golden) jerry spawned!$");
+	private static final Pattern JERRY_APPEARED_PATTERN = Pattern.compile("^\\W*a (green|blue|purple|golden) jerry appeared!$");
+	private static final Pattern JERRY_THERE_IS_PATTERN = Pattern.compile("^\\W*there is a (green|blue|purple|golden) jerry!$");
+	private static final Pattern JERRY_HIDDEN_PATTERN = Pattern.compile("^\\W*you located a hidden (green|blue|purple|golden) jerry!$");
 	private static final long JERRY_COOLDOWN_MS = 6L * 60L * 1000L;
 	private static long lastJerryFoundAtMs = -1L;
 
@@ -51,7 +56,12 @@ public final class JerryFeatures {
 			return false;
 		}
 		String normalized = normalizeMessage(incomingText.getString());
-		return HIDDEN_JERRY_PATTERN.matcher(normalized).matches();
+		return JERRY_FOUND_PATTERN.matcher(normalized).matches()
+			|| JERRY_HIDING_PATTERN.matcher(normalized).matches()
+			|| JERRY_WILD_PATTERN.matcher(normalized).matches()
+			|| JERRY_APPEARED_PATTERN.matcher(normalized).matches()
+			|| JERRY_THERE_IS_PATTERN.matcher(normalized).matches()
+			|| JERRY_HIDDEN_PATTERN.matcher(normalized).matches();
 	}
 
 	public static void render(DrawContext context, boolean forceVisible) {
