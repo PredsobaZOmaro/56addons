@@ -10,6 +10,7 @@ Current features:
 - Chat compact
 - Dark Auction timer + Notification
 - Play meme sounds on rare drops and more!
+- Jerry Cooldown timer + Notification
 
 ## meow
 
