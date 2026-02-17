@@ -1,6 +1,7 @@
 package com.example.mixin.client;
 
 import com.example.ExampleMod;
+import com.example.Addons56SoundTriggers;
 import com.example.chatCompact;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
@@ -35,6 +36,9 @@ public abstract class ChatHudCompactMixin {
 		cancellable = true
 	)
 	private void addons56$compactIncoming(Text incomingText, MessageSignatureData signature, MessageIndicator indicator, CallbackInfo ci) {
+		// Sound triggers are independent from chat compaction and should run for every incoming line.
+		Addons56SoundTriggers.handleIncomingChatMessage(incomingText);
+
 		if (!chatCompact.isChatCompactEnabled()) {
 			return;
 		}

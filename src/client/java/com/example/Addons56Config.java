@@ -22,6 +22,8 @@ public final class Addons56Config {
 	public int darkAuctionTimerX = 10;
 	public int darkAuctionTimerY = 10;
 	public float darkAuctionTimerScale = 1.0f;
+	public boolean ooomagaSoundEnabled = false;
+	public boolean windowsXpSoundEnabled = false;
 
 	public static Addons56Config load() {
 		if (!Files.exists(CONFIG_PATH)) {
