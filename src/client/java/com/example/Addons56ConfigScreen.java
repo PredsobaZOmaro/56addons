@@ -28,6 +28,8 @@ public class Addons56ConfigScreen extends Screen {
 	private ButtonWidget generalEditGuiButton;
 	private ButtonWidget generalDaTimerButton;
 	private ButtonWidget generalDaNotifyButton;
+	private ButtonWidget generalJerryCooldownHudButton;
+	private ButtonWidget generalJerryNotificationButton;
 	private ButtonWidget soundsOoomagaButton;
 	private ButtonWidget soundsWindowsXpButton;
 	private ButtonWidget soundsSpidermanButton;
@@ -43,6 +45,8 @@ public class Addons56ConfigScreen extends Screen {
 	private int pendingChatCompactWindowSeconds;
 	private boolean pendingDarkAuctionTimerEnabled;
 	private boolean pendingDarkAuctionNotifyOneMinute;
+	private boolean pendingJerryCooldownHudEnabled;
+	private boolean pendingJerryNotificationEnabled;
 	private boolean pendingOoomagaSoundEnabled;
 	private boolean pendingWindowsXpSoundEnabled;
 	private boolean pendingSpidermanSoundEnabled;
@@ -109,6 +113,16 @@ public class Addons56ConfigScreen extends Screen {
 			pendingDarkAuctionNotifyOneMinute = !pendingDarkAuctionNotifyOneMinute;
 			markDirty();
 		}).dimensions(centerX - 100, 140, 200, 20).build());
+
+		this.generalJerryCooldownHudButton = addDrawableChild(ButtonWidget.builder(getJerryCooldownHudLabel(), button -> {
+			pendingJerryCooldownHudEnabled = !pendingJerryCooldownHudEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 166, 200, 20).build());
+
+		this.generalJerryNotificationButton = addDrawableChild(ButtonWidget.builder(getJerryNotificationLabel(), button -> {
+			pendingJerryNotificationEnabled = !pendingJerryNotificationEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 192, 200, 20).build());
 
 		this.soundsOoomagaButton = addDrawableChild(ButtonWidget.builder(getOoomagaLabel(), button -> {
 			pendingOoomagaSoundEnabled = !pendingOoomagaSoundEnabled;
@@ -206,6 +220,14 @@ public class Addons56ConfigScreen extends Screen {
 		return Text.literal("Notify 1 Minute Before DA: " + (pendingDarkAuctionNotifyOneMinute ? "ON" : "OFF"));
 	}
 
+	private Text getJerryCooldownHudLabel() {
+		return Text.literal("Jerry Cooldown HUD: " + (pendingJerryCooldownHudEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getJerryNotificationLabel() {
+		return Text.literal("Jerry Notification: " + (pendingJerryNotificationEnabled ? "ON" : "OFF"));
+	}
+
 	private Text getOoomagaLabel() {
 		return Text.literal("ooomaga: " + (pendingOoomagaSoundEnabled ? "ON" : "OFF"));
 	}
@@ -257,6 +279,14 @@ public class Addons56ConfigScreen extends Screen {
 		if (generalDaNotifyButton != null) {
 			generalDaNotifyButton.visible = selectedTab == Tab.GENERAL;
 			generalDaNotifyButton.setMessage(getDarkAuctionNotifyLabel());
+		}
+		if (generalJerryCooldownHudButton != null) {
+			generalJerryCooldownHudButton.visible = selectedTab == Tab.GENERAL;
+			generalJerryCooldownHudButton.setMessage(getJerryCooldownHudLabel());
+		}
+		if (generalJerryNotificationButton != null) {
+			generalJerryNotificationButton.visible = selectedTab == Tab.GENERAL;
+			generalJerryNotificationButton.setMessage(getJerryNotificationLabel());
 		}
 
 		if (chatCompactButton != null) {
@@ -328,6 +358,8 @@ public class Addons56ConfigScreen extends Screen {
 		pendingChatCompactWindowSeconds = Math.max(1, current.chatCompactWindowSeconds);
 		pendingDarkAuctionTimerEnabled = current.darkAuctionTimerEnabled;
 		pendingDarkAuctionNotifyOneMinute = current.darkAuctionNotifyOneMinute;
+		pendingJerryCooldownHudEnabled = current.jerryCooldownHudEnabled;
+		pendingJerryNotificationEnabled = current.jerryNotificationEnabled;
 		pendingOoomagaSoundEnabled = current.ooomagaSoundEnabled;
 		pendingWindowsXpSoundEnabled = current.windowsXpSoundEnabled;
 		pendingSpidermanSoundEnabled = current.spidermanSoundEnabled;
@@ -353,6 +385,8 @@ public class Addons56ConfigScreen extends Screen {
 		updated.chatCompactWindowSeconds = Math.max(1, pendingChatCompactWindowSeconds);
 		updated.darkAuctionTimerEnabled = pendingDarkAuctionTimerEnabled;
 		updated.darkAuctionNotifyOneMinute = pendingDarkAuctionNotifyOneMinute;
+		updated.jerryCooldownHudEnabled = pendingJerryCooldownHudEnabled;
+		updated.jerryNotificationEnabled = pendingJerryNotificationEnabled;
 		updated.ooomagaSoundEnabled = pendingOoomagaSoundEnabled;
 		updated.windowsXpSoundEnabled = pendingWindowsXpSoundEnabled;
 		updated.spidermanSoundEnabled = pendingSpidermanSoundEnabled;
@@ -386,7 +420,7 @@ public class Addons56ConfigScreen extends Screen {
 		context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Section: " + selectedTab.label.getString()), this.width / 2, 66, 0xAAAAAA);
 
 		if (selectedTab == Tab.GENERAL) {
-			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("HUD and notification settings"), this.width / 2, 170, 0xDDDDDD);
+			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("HUD and notification settings"), this.width / 2, 224, 0xDDDDDD);
 		} else if (selectedTab == Tab.SOUNDS) {
 			int left = getSoundsContainerLeft();
 			int right = left + SOUNDS_CONTAINER_WIDTH;

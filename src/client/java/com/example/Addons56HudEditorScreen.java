@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public class Addons56HudEditorScreen extends Screen {
 	private final Screen parent;
-	private boolean draggingTimer;
+	private DragTarget dragTarget = DragTarget.NONE;
 	private int dragOffsetX;
 	private int dragOffsetY;
 
@@ -26,121 +26,168 @@ public class Addons56HudEditorScreen extends Screen {
 		context.drawCenteredTextWithShadow(tr, Text.literal("HUD Editor"), this.width / 2, 14, 0xFFFFFF);
 		context.drawCenteredTextWithShadow(
 			tr,
-			Text.literal("Drag timer with LMB, scroll to resize, press ESC to save and exit"),
+			Text.literal("Drag HUD with LMB, scroll to resize, press ESC to save and exit"),
 			this.width / 2,
 			30,
 			0xDDDDDD
 		);
 
-		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
-			draggingTimer = false;
-			context.drawCenteredTextWithShadow(
-				tr,
-				Text.literal("Dark Auction Timer is OFF in settings"),
-				this.width / 2,
-				54,
-				0xFFAA00
-			);
+		boolean hasDarkAuctionHud = DarkAuctionTimerSettings.isTimerEnabled();
+		boolean hasJerryHud = JerrySettings.isCooldownHudEnabled();
+		if (!hasDarkAuctionHud && !hasJerryHud) {
+			dragTarget = DragTarget.NONE;
+			context.drawCenteredTextWithShadow(tr, Text.literal("Dark Auction Timer is OFF in settings"), this.width / 2, 54, 0xFFAA00);
+			context.drawCenteredTextWithShadow(tr, Text.literal("Jerry Cooldown HUD is OFF in settings"), this.width / 2, 66, 0xFFAA00);
 			return;
 		}
 
-		int x = DarkAuctionTimerSettings.getX();
-		int y = DarkAuctionTimerSettings.getY();
-		float scale = DarkAuctionTimerSettings.getScale();
-		int boxWidth = DarkAuctionTimerHud.getScaledWidth(tr, scale);
-		int boxHeight = DarkAuctionTimerHud.getScaledHeight(tr, scale);
-		boolean hovered = isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight);
-		int borderColor = hovered || draggingTimer ? 0xFF66CCFF : 0x88FFFFFF;
+		if (hasDarkAuctionHud) {
+			int x = DarkAuctionTimerSettings.getX();
+			int y = DarkAuctionTimerSettings.getY();
+			float scale = DarkAuctionTimerSettings.getScale();
+			int boxWidth = DarkAuctionTimerHud.getScaledWidth(tr, scale);
+			int boxHeight = DarkAuctionTimerHud.getScaledHeight(tr, scale);
+			boolean hovered = isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight);
+			int borderColor = hovered || dragTarget == DragTarget.DARK_AUCTION ? 0xFF66CCFF : 0x88FFFFFF;
 
-		context.fill(x - 2, y - 2, x + boxWidth + 2, y + boxHeight + 2, 0x50000000);
-		drawBorder(context, x - 2, y - 2, boxWidth + 4, boxHeight + 4, borderColor);
-		DarkAuctionTimerHud.render(context, true);
+			context.fill(x - 2, y - 2, x + boxWidth + 2, y + boxHeight + 2, 0x50000000);
+			drawBorder(context, x - 2, y - 2, boxWidth + 4, boxHeight + 4, borderColor);
+			DarkAuctionTimerHud.render(context, true);
+		}
+
+		if (hasJerryHud) {
+			int x = JerrySettings.getHudX();
+			int y = JerrySettings.getHudY();
+			float scale = JerrySettings.getHudScale();
+			int boxWidth = JerryFeatures.getScaledWidth(tr, scale);
+			int boxHeight = JerryFeatures.getScaledHeight(tr, scale);
+			boolean hovered = isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight);
+			int borderColor = hovered || dragTarget == DragTarget.JERRY ? 0xFF66CCFF : 0x88FFFFFF;
+
+			context.fill(x - 2, y - 2, x + boxWidth + 2, y + boxHeight + 2, 0x50000000);
+			drawBorder(context, x - 2, y - 2, boxWidth + 4, boxHeight + 4, borderColor);
+			JerryFeatures.render(context, true);
+		}
 	}
 
 	@Override
 	public boolean mouseClicked(Click click, boolean doubled) {
-		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
-			return super.mouseClicked(click, doubled);
-		}
-
 		if (click.button() != 0) {
 			return super.mouseClicked(click, doubled);
 		}
 
 		double mouseX = click.x();
 		double mouseY = click.y();
-		int x = DarkAuctionTimerSettings.getX();
-		int y = DarkAuctionTimerSettings.getY();
-		float scale = DarkAuctionTimerSettings.getScale();
-		int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
-		int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
-		if (!isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight)) {
-			return super.mouseClicked(click, doubled);
+		if (JerrySettings.isCooldownHudEnabled()) {
+			int jx = JerrySettings.getHudX();
+			int jy = JerrySettings.getHudY();
+			float jScale = JerrySettings.getHudScale();
+			int jWidth = JerryFeatures.getScaledWidth(this.textRenderer, jScale);
+			int jHeight = JerryFeatures.getScaledHeight(this.textRenderer, jScale);
+			if (isHovered(mouseX, mouseY, jx, jy, jWidth, jHeight)) {
+				dragTarget = DragTarget.JERRY;
+				dragOffsetX = (int) Math.round(mouseX) - jx;
+				dragOffsetY = (int) Math.round(mouseY) - jy;
+				return true;
+			}
 		}
 
-		draggingTimer = true;
-		dragOffsetX = (int) Math.round(mouseX) - x;
-		dragOffsetY = (int) Math.round(mouseY) - y;
-		return true;
+		if (DarkAuctionTimerSettings.isTimerEnabled()) {
+			int x = DarkAuctionTimerSettings.getX();
+			int y = DarkAuctionTimerSettings.getY();
+			float scale = DarkAuctionTimerSettings.getScale();
+			int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
+			int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
+			if (isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight)) {
+				dragTarget = DragTarget.DARK_AUCTION;
+				dragOffsetX = (int) Math.round(mouseX) - x;
+				dragOffsetY = (int) Math.round(mouseY) - y;
+				return true;
+			}
+		}
+
+		return super.mouseClicked(click, doubled);
 	}
 
 	@Override
 	public boolean mouseReleased(Click click) {
 		if (click.button() == 0) {
-			draggingTimer = false;
+			dragTarget = DragTarget.NONE;
 		}
 		return super.mouseReleased(click);
 	}
 
 	@Override
 	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
-		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
-			draggingTimer = false;
-			return super.mouseDragged(click, deltaX, deltaY);
-		}
-
-		if (!draggingTimer || click.button() != 0) {
+		if (dragTarget == DragTarget.NONE || click.button() != 0) {
 			return super.mouseDragged(click, deltaX, deltaY);
 		}
 
 		double mouseX = click.x();
 		double mouseY = click.y();
-		float scale = DarkAuctionTimerSettings.getScale();
-		int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
-		int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
 		int targetX = (int) Math.round(mouseX) - dragOffsetX;
 		int targetY = (int) Math.round(mouseY) - dragOffsetY;
-		int clampedX = Math.max(0, Math.min(targetX, this.width - boxWidth));
-		int clampedY = Math.max(0, Math.min(targetY, this.height - boxHeight));
-		DarkAuctionTimerSettings.setPosition(clampedX, clampedY);
-		return true;
+		if (dragTarget == DragTarget.DARK_AUCTION) {
+			float scale = DarkAuctionTimerSettings.getScale();
+			int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
+			int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
+			int clampedX = Math.max(0, Math.min(targetX, this.width - boxWidth));
+			int clampedY = Math.max(0, Math.min(targetY, this.height - boxHeight));
+			DarkAuctionTimerSettings.setPosition(clampedX, clampedY);
+			return true;
+		}
+		if (dragTarget == DragTarget.JERRY) {
+			float scale = JerrySettings.getHudScale();
+			int boxWidth = JerryFeatures.getScaledWidth(this.textRenderer, scale);
+			int boxHeight = JerryFeatures.getScaledHeight(this.textRenderer, scale);
+			int clampedX = Math.max(0, Math.min(targetX, this.width - boxWidth));
+			int clampedY = Math.max(0, Math.min(targetY, this.height - boxHeight));
+			JerrySettings.setHudPosition(clampedX, clampedY);
+			return true;
+		}
+		return super.mouseDragged(click, deltaX, deltaY);
 	}
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		if (!DarkAuctionTimerSettings.isTimerEnabled()) {
-			return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+		if (JerrySettings.isCooldownHudEnabled()) {
+			int jx = JerrySettings.getHudX();
+			int jy = JerrySettings.getHudY();
+			float jScale = JerrySettings.getHudScale();
+			int jWidth = JerryFeatures.getScaledWidth(this.textRenderer, jScale);
+			int jHeight = JerryFeatures.getScaledHeight(this.textRenderer, jScale);
+			if (isHovered(mouseX, mouseY, jx, jy, jWidth, jHeight)) {
+				float updatedScale = Math.max(0.5f, Math.min(3.0f, jScale + (float) verticalAmount * 0.1f));
+				JerrySettings.setHudScale(updatedScale);
+				int newWidth = JerryFeatures.getScaledWidth(this.textRenderer, updatedScale);
+				int newHeight = JerryFeatures.getScaledHeight(this.textRenderer, updatedScale);
+				int clampedX = Math.max(0, Math.min(jx, this.width - newWidth));
+				int clampedY = Math.max(0, Math.min(jy, this.height - newHeight));
+				JerrySettings.setHudPosition(clampedX, clampedY);
+				return true;
+			}
 		}
 
-		int x = DarkAuctionTimerSettings.getX();
-		int y = DarkAuctionTimerSettings.getY();
-		float scale = DarkAuctionTimerSettings.getScale();
-		int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
-		int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
-		if (!isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight)) {
-			return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+		if (DarkAuctionTimerSettings.isTimerEnabled()) {
+			int x = DarkAuctionTimerSettings.getX();
+			int y = DarkAuctionTimerSettings.getY();
+			float scale = DarkAuctionTimerSettings.getScale();
+			int boxWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, scale);
+			int boxHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, scale);
+			if (isHovered(mouseX, mouseY, x, y, boxWidth, boxHeight)) {
+				float updatedScale = Math.max(0.5f, Math.min(3.0f, scale + (float) verticalAmount * 0.1f));
+				DarkAuctionTimerSettings.setScale(updatedScale);
+
+				int newWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, updatedScale);
+				int newHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, updatedScale);
+				int clampedX = Math.max(0, Math.min(x, this.width - newWidth));
+				int clampedY = Math.max(0, Math.min(y, this.height - newHeight));
+				DarkAuctionTimerSettings.setPosition(clampedX, clampedY);
+				return true;
+			}
 		}
 
-		float updatedScale = scale + (float) verticalAmount * 0.1f;
-		updatedScale = Math.max(0.5f, Math.min(3.0f, updatedScale));
-		DarkAuctionTimerSettings.setScale(updatedScale);
-
-		int newWidth = DarkAuctionTimerHud.getScaledWidth(this.textRenderer, updatedScale);
-		int newHeight = DarkAuctionTimerHud.getScaledHeight(this.textRenderer, updatedScale);
-		int clampedX = Math.max(0, Math.min(x, this.width - newWidth));
-		int clampedY = Math.max(0, Math.min(y, this.height - newHeight));
-		DarkAuctionTimerSettings.setPosition(clampedX, clampedY);
-		return true;
+		return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 	}
 
 	@Override
@@ -159,5 +206,11 @@ public class Addons56HudEditorScreen extends Screen {
 		context.fill(x, y + height - 1, x + width, y + height, color);
 		context.fill(x, y, x + 1, y + height, color);
 		context.fill(x + width - 1, y, x + width, y + height, color);
+	}
+
+	private enum DragTarget {
+		NONE,
+		DARK_AUCTION,
+		JERRY
 	}
 }
