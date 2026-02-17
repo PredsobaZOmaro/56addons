@@ -26,6 +26,10 @@ public final class Addons56ConfigStore {
 		copy.angelsoundSoundEnabled = source.angelsoundSoundEnabled;
 		copy.wowSoundEnabled = source.wowSoundEnabled;
 		copy.sadViolinSoundEnabled = source.sadViolinSoundEnabled;
+		copy.jawsSoundEnabled = source.jawsSoundEnabled;
+		copy.wikitikiSoundEnabled = source.wikitikiSoundEnabled;
+		copy.amogusSoundEnabled = source.amogusSoundEnabled;
+		copy.faaahSoundEnabled = source.faaahSoundEnabled;
 		return copy;
 	}
 

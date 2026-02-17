@@ -57,11 +57,6 @@ public final class DarkAuctionTimerHud {
 		return Math.round(textRenderer.fontHeight * scale);
 	}
 
-	public static Text getTimerText() {
-		return Text.literal(getLabelText()).formatted(Formatting.GOLD, Formatting.BOLD)
-			.append(Text.literal(getTimerValueText()).formatted(Formatting.WHITE));
-	}
-
 	private static String getLabelText() {
 		return "Dark Auction: ";
 	}

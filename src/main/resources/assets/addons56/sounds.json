@@ -40,5 +40,33 @@
         "name": "addons56:sad_violin"
       }
     ]
+  },
+  "jaws": {
+    "sounds": [
+      {
+        "name": "addons56:jaws"
+      }
+    ]
+  },
+  "wikitiki": {
+    "sounds": [
+      {
+        "name": "addons56:wikitiki"
+      }
+    ]
+  },
+  "amogus": {
+    "sounds": [
+      {
+        "name": "addons56:amogus_role"
+      }
+    ]
+  },
+  "faaah": {
+    "sounds": [
+      {
+        "name": "addons56:faaah"
+      }
+    ]
   }
 }

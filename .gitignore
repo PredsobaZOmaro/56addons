@@ -38,3 +38,6 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+# local scripts
+scripts/deploy-to-prism.ps1
