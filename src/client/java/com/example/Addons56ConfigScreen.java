@@ -20,6 +20,10 @@ public class Addons56ConfigScreen extends Screen {
 	private ButtonWidget generalDaNotifyButton;
 	private ButtonWidget soundsOoomagaButton;
 	private ButtonWidget soundsWindowsXpButton;
+	private ButtonWidget soundsSpidermanButton;
+	private ButtonWidget soundsAngelsoundButton;
+	private ButtonWidget soundsWowButton;
+	private ButtonWidget soundsSadViolinButton;
 	private ButtonWidget saveButton;
 	private boolean pendingChatCompactEnabled;
 	private int pendingChatCompactWindowSeconds;
@@ -27,6 +31,10 @@ public class Addons56ConfigScreen extends Screen {
 	private boolean pendingDarkAuctionNotifyOneMinute;
 	private boolean pendingOoomagaSoundEnabled;
 	private boolean pendingWindowsXpSoundEnabled;
+	private boolean pendingSpidermanSoundEnabled;
+	private boolean pendingAngelsoundSoundEnabled;
+	private boolean pendingWowSoundEnabled;
+	private boolean pendingSadViolinSoundEnabled;
 	private boolean hasUnsavedChanges;
 
 	public Addons56ConfigScreen(Screen parent) {
@@ -90,6 +98,26 @@ public class Addons56ConfigScreen extends Screen {
 			markDirty();
 		}).dimensions(centerX - 100, 114, 200, 20).build());
 
+		this.soundsSpidermanButton = addDrawableChild(ButtonWidget.builder(getSpidermanLabel(), button -> {
+			pendingSpidermanSoundEnabled = !pendingSpidermanSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 140, 200, 20).build());
+
+		this.soundsAngelsoundButton = addDrawableChild(ButtonWidget.builder(getAngelsoundLabel(), button -> {
+			pendingAngelsoundSoundEnabled = !pendingAngelsoundSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 166, 200, 20).build());
+
+		this.soundsWowButton = addDrawableChild(ButtonWidget.builder(getWowLabel(), button -> {
+			pendingWowSoundEnabled = !pendingWowSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 192, 200, 20).build());
+
+		this.soundsSadViolinButton = addDrawableChild(ButtonWidget.builder(getSadViolinLabel(), button -> {
+			pendingSadViolinSoundEnabled = !pendingSadViolinSoundEnabled;
+			markDirty();
+		}).dimensions(centerX - 100, 218, 200, 20).build());
+
 		this.saveButton = addDrawableChild(ButtonWidget.builder(Text.literal("Save Changes"), button -> savePendingChanges())
 			.dimensions(centerX - 100, this.height - 36, 98, 20)
 			.build());
@@ -127,11 +155,27 @@ public class Addons56ConfigScreen extends Screen {
 	}
 
 	private Text getOoomagaLabel() {
-		return Text.literal("Rare Drop Carrot/Potato: " + (pendingOoomagaSoundEnabled ? "ON" : "OFF"));
+		return Text.literal("ooomaga: " + (pendingOoomagaSoundEnabled ? "ON" : "OFF"));
 	}
 
 	private Text getWindowsXpLabel() {
-		return Text.literal("Frog Man or Dumpster Diver: " + (pendingWindowsXpSoundEnabled ? "ON" : "OFF"));
+		return Text.literal("windows_xp: " + (pendingWindowsXpSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getSpidermanLabel() {
+		return Text.literal("spiderman: " + (pendingSpidermanSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getAngelsoundLabel() {
+		return Text.literal("angelsound: " + (pendingAngelsoundSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getWowLabel() {
+		return Text.literal("wow: " + (pendingWowSoundEnabled ? "ON" : "OFF"));
+	}
+
+	private Text getSadViolinLabel() {
+		return Text.literal("sad_violin: " + (pendingSadViolinSoundEnabled ? "ON" : "OFF"));
 	}
 
 	private void updateVisibleControls() {
@@ -172,6 +216,22 @@ public class Addons56ConfigScreen extends Screen {
 			soundsWindowsXpButton.visible = selectedTab == Tab.SOUNDS;
 			soundsWindowsXpButton.setMessage(getWindowsXpLabel());
 		}
+		if (soundsSpidermanButton != null) {
+			soundsSpidermanButton.visible = selectedTab == Tab.SOUNDS;
+			soundsSpidermanButton.setMessage(getSpidermanLabel());
+		}
+		if (soundsAngelsoundButton != null) {
+			soundsAngelsoundButton.visible = selectedTab == Tab.SOUNDS;
+			soundsAngelsoundButton.setMessage(getAngelsoundLabel());
+		}
+		if (soundsWowButton != null) {
+			soundsWowButton.visible = selectedTab == Tab.SOUNDS;
+			soundsWowButton.setMessage(getWowLabel());
+		}
+		if (soundsSadViolinButton != null) {
+			soundsSadViolinButton.visible = selectedTab == Tab.SOUNDS;
+			soundsSadViolinButton.setMessage(getSadViolinLabel());
+		}
 
 		if (generalTabButton != null) {
 			generalTabButton.active = selectedTab != Tab.GENERAL;
@@ -195,6 +255,10 @@ public class Addons56ConfigScreen extends Screen {
 		pendingDarkAuctionNotifyOneMinute = current.darkAuctionNotifyOneMinute;
 		pendingOoomagaSoundEnabled = current.ooomagaSoundEnabled;
 		pendingWindowsXpSoundEnabled = current.windowsXpSoundEnabled;
+		pendingSpidermanSoundEnabled = current.spidermanSoundEnabled;
+		pendingAngelsoundSoundEnabled = current.angelsoundSoundEnabled;
+		pendingWowSoundEnabled = current.wowSoundEnabled;
+		pendingSadViolinSoundEnabled = current.sadViolinSoundEnabled;
 		hasUnsavedChanges = false;
 	}
 
@@ -212,6 +276,10 @@ public class Addons56ConfigScreen extends Screen {
 		updated.darkAuctionNotifyOneMinute = pendingDarkAuctionNotifyOneMinute;
 		updated.ooomagaSoundEnabled = pendingOoomagaSoundEnabled;
 		updated.windowsXpSoundEnabled = pendingWindowsXpSoundEnabled;
+		updated.spidermanSoundEnabled = pendingSpidermanSoundEnabled;
+		updated.angelsoundSoundEnabled = pendingAngelsoundSoundEnabled;
+		updated.wowSoundEnabled = pendingWowSoundEnabled;
+		updated.sadViolinSoundEnabled = pendingSadViolinSoundEnabled;
 		Addons56ConfigStore.apply(updated);
 		hasUnsavedChanges = false;
 		updateVisibleControls();
@@ -237,7 +305,7 @@ public class Addons56ConfigScreen extends Screen {
 		if (selectedTab == Tab.GENERAL) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("HUD and notification settings"), this.width / 2, 170, 0xDDDDDD);
 		} else if (selectedTab == Tab.SOUNDS) {
-			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Chat-triggered sound effects"), this.width / 2, 144, 0xDDDDDD);
+			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Toggle sound files"), this.width / 2, 248, 0xDDDDDD);
 		}
 		if (hasUnsavedChanges) {
 			context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Unsaved changes"), this.width / 2, this.height - 48, 0xFFAA00);
