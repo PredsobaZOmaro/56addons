@@ -55,8 +55,7 @@ public abstract class ChatHudCompactMixin {
 
 		ChatHudLine matched = messages.get(matchIndex);
 		int nextCount = extractCountSuffix(matched.content().getString()) + 1;
-		MutableText baseText = stripCountSuffix(matched.content().copy());
-		MutableText replacement = baseText.copy()
+		MutableText replacement = incomingText.copy()
 			.append(Text.literal(" (" + nextCount + ")").formatted(Formatting.GRAY));
 
 		// Move the compacted line to the newest position (ChatHud stores newest at index 0).
@@ -127,7 +126,7 @@ public abstract class ChatHudCompactMixin {
 		}
 		for (int i = 0; i < normalized.length(); i++) {
 			char c = normalized.charAt(i);
-			if (!Character.isWhitespace(c) && c != '-' && c != '=' && c != '_' && c != '|' && c != '~') {
+			if (!Character.isWhitespace(c) && c != '-' && c != '=' && c != '_' && c != '|' && c != '~' && c != '▬') {
 				return false;
 			}
 		}
@@ -145,12 +144,6 @@ public abstract class ChatHudCompactMixin {
 		normalized = normalized.replaceFirst("^[^:\\n]{1,32}:\\s+", "");
 		normalized = normalized.replaceAll("\\s+", " ");
 		return normalized;
-	}
-
-	private static MutableText stripCountSuffix(MutableText text) {
-		String raw = text.getString();
-		String stripped = raw.replaceAll("\\s*\\(\\d+\\)\\s*$", "");
-		return Text.literal(stripped);
 	}
 
 	private static int extractCountSuffix(String raw) {
